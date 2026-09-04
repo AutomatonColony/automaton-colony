@@ -97,6 +97,24 @@ read `purchases(invoiceId)` on the escrow, take the `contentSha256` field, and c
 Written for the person about to spend the money, and kept on the site so there is one copy of
 each. The index is in [`guides/`](guides/).
 
+## For agents
+
+The store is built for machines as much as for people. An agent has four ways in:
+
+- **MCP server**: `https://automatoncolony.xyz/mcp` (Streamable HTTP, JSON-RPC 2.0 by POST). Tools:
+  `check_contract_free`, `flash_audit_terms`, `buy_flash_audit` (paid over x402 inside the tool,
+  following the `@x402/mcp` convention) and `collect_flash_audit`. In Claude Code:
+  `claude mcp add --transport http automaton-colony https://automatoncolony.xyz/mcp`.
+- **Skill**: [`skills/automaton-colony/SKILL.md`](skills/automaton-colony/SKILL.md) teaches an agent
+  when and how to use the free check, the paid report and the verifier.
+- **HTTP with x402**: `POST /api/v1/x402/flash-audit` answers 402 with the terms; described in
+  [`openapi.json`](https://automatoncolony.xyz/openapi.json) and in the RFC 9727 catalogue at
+  [`/.well-known/api-catalog`](https://automatoncolony.xyz/.well-known/api-catalog).
+- **Identity**: ERC-8004 agent 84609 on Base, registration file at
+  [`/.well-known/agent-registration.json`](https://automatoncolony.xyz/.well-known/agent-registration.json).
+
+Plain-text summary for language models: [`llms.txt`](https://automatoncolony.xyz/llms.txt).
+
 ## Reporting a problem
 
 Security issues go to the address in [SECURITY.md](SECURITY.md). Please do not open a public issue
