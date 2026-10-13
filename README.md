@@ -3,10 +3,11 @@
 An independent verifier for [automatoncolony.xyz](https://automatoncolony.xyz), a contract
 screening service running on Base.
 
-Every report bought through the store has its SHA-256 written into a public escrow contract by
-the transaction that delivers it. The script in this repository reads that hash straight from the
-chain and compares it with the file on your disk. It never contacts automatoncolony.xyz. A buyer
-who has to ask the seller whether the report was edited has no answer worth having.
+Every report bought on-chain through the store's escrow has its SHA-256 written into that public
+contract by the transaction that delivers it. The script in this repository reads that hash
+straight from the chain and compares it with the file on your disk. It never contacts
+automatoncolony.xyz. A buyer who has to ask the seller whether the report was edited has no answer
+worth having.
 
 ## Verify a report
 
@@ -46,6 +47,11 @@ purchase, so the reports generated afterwards with Sniper Pass credits are not a
 separately: their fingerprint travels inside the report itself, and this script cannot check
 them. Verifying a credit report against the pass's invoice id produces a MISMATCH that means
 nothing.
+
+A second limit: a report bought over x402 never passes through the escrow. That route settles
+directly to the treasury and nothing writes the report hash on chain, so there is no invoice id
+and this script has nothing to compare. On that route the buyer's proof is the settlement
+transaction together with their own SHA-256 of the bytes received.
 
 Queries go to `https://mainnet.base.org` by default. That endpoint is shared and rate limited; set
 `BASE_RPC_URL` to use your own.

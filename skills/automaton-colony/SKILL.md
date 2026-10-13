@@ -1,13 +1,14 @@
 ---
 name: automaton-colony
-description: Screen a smart contract or B20 native token on Base before trusting it. Free on-chain check with no wallet; paid Flash Audit (USDC over x402) delivered as JSON with an anchored hash. Use when a user asks whether a Base token or contract is safe, who controls it, or wants a risk report.
+description: Screen a smart contract or B20 native token on Base before trusting it. Free on-chain check with no wallet; paid Flash Report (USDC over x402) delivered as JSON. Use when a user asks whether a Base token or contract is safe, who controls it, or wants a risk report.
 ---
 
 # Automaton Colony
 
 Automated security screening of smart contracts and B20 native tokens on Base (eip155:8453).
-Every report states what it could **not** verify, as open items with the reason. The hash of each
-paid report is anchored on Base at purchase, so the copy you hold can be checked against the chain.
+Every report states what it could **not** verify, as open items with the reason. A report bought
+on-chain through the store's escrow has its SHA-256 written on Base by the transaction that
+delivers it. A report bought over x402 is not anchored (see "Verifying a delivered report").
 
 Not a professional audit and not financial advice: the absence of a signal means it was not
 observed, never that the risk is absent.
@@ -28,7 +29,7 @@ Endpoint: `https://automatoncolony.xyz/mcp` (Streamable HTTP, JSON-RPC 2.0 by PO
 |---|---|---|
 | `check_contract_free` | Observed on-chain facts about an address, no verdict | Free |
 | `flash_audit_terms` | The x402 `PaymentRequired` for the paid report (amount, network, asset, payTo) | Free |
-| `buy_flash_audit` | Buys the Flash Audit over x402 inside the tool | What the 402 states |
+| `buy_flash_audit` | Buys the Flash Report over x402 inside the tool | What the 402 states |
 | `collect_flash_audit` | Order status, then the report JSON when DELIVERED | Free |
 
 Add it in Claude Code:
@@ -47,7 +48,7 @@ with the `PaymentPayload` in `params._meta["x402/payment"]`. You get an `orderKe
 ## Plain HTTP
 
 - Free check: `GET https://automatoncolony.xyz/api/v1/free-check/<address>` → JSON, no verdict.
-- Paid Flash Audit: `POST https://automatoncolony.xyz/api/v1/x402/flash-audit` with body
+- Paid Flash Report: `POST https://automatoncolony.xyz/api/v1/x402/flash-audit` with body
   `{"targetAddress":"0x…","language":"en"}`. Without a payment header it answers HTTP 402 with the
   x402 v2 `PaymentRequired` (also base64 in the `PAYMENT-REQUIRED` header). Retry with the
   `PAYMENT-SIGNATURE` header (base64 of the `PaymentPayload`) to receive HTTP 202 with an
@@ -79,8 +80,10 @@ two. No account and no contact with automatoncolony.xyz are needed:
 node verify-report.mjs <invoiceId> <path-to-report.json>
 ```
 
-Reports bought over x402 carry their SHA-256 inside the JSON and the settlement transaction in the
-`PAYMENT-RESPONSE` header (or `_meta["x402/payment-response"]` over MCP); keep both together.
+Buying over x402 has no escrow and does not anchor the report on chain, so the verifier does not
+apply to those reports. The delivered report comes with the settlement transaction in the
+`PAYMENT-RESPONSE` header (or in `_meta["x402/payment-response"]` over MCP). Keep it together with
+your own SHA-256 of the bytes you received: that pair is your proof of what was delivered.
 
 ## Identity
 
